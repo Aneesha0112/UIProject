@@ -17,7 +17,7 @@ router
 
   .post('/read', async (req, res) => {
     try {
-      const post = await Post.readPost(req.body._id);
+      const post = await Post.readPost(req.body._id, req.body.user);
       res.send(post);
     } catch(error) {
       res.status(401).send({ message: error.message }); 
@@ -26,7 +26,7 @@ router
   
   .put('/update', async (req, res) => {
     try {
-      const post = await Post.updatePost(req.body._id, req.body.content, req.body.time);
+      const post = await Post.updatePost(req.body._id, req.body.content, req.body.time, req.body.user);
       res.send({post});
     } catch(error) {
       res.status(401).send({ message: error.message });
@@ -35,7 +35,7 @@ router
 
   .delete('/delete', async (req, res) => {
     try {
-      await Post.deletePost(req.body._id);
+      await Post.deletePost(req.body._id, req.body.user);
       res.send({ success: "Post deleted" });
     } catch(error) {
       res.status(401).send({ message: error.message });

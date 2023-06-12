@@ -25,25 +25,27 @@ async function createPost(user, content, time, location) {
   return newPost;
 }
 
-async function updatePost( id, content) {
+async function updatePost( id, content, user) {
   const post = await Post.findOne({ "_id": id });
   if(!post) throw Error("Post not found");
   const now = new Date();
   const data={
         content : content,
-        time: now.toISOString()
+        time: now.toISOString(),
+        user: user
     }
   const update = await Post.findByIdAndUpdate(id, data, { new: true });
   return update;
 }
 
-async function readPost(id) {
+async function readPost(id, user) {
   const post = await Post.findOne({ "_id": id });
   if(!post) throw Error("Post not found");
   return post;
 }
 
-async function deletePost(id) {
+async function deletePost(id, user) {
+  if(Post.user!=user) throw Error("User not eligible to delete post");
   const post = await Post.findOne({ "_id": id });
   if(!post) throw Error("Post not found");
   await Post.deleteOne({"_id": id});
