@@ -12,10 +12,11 @@ const User = mongoose.model('User', userSchema);
 async function userRegister(username, password, email) {
   const user = await getUser(username);
   if(user) throw Error('Username already exists');
-
+  const salt=await bcrypt.genSalt(10);
+  const hashed= await bcrypt.hash(password,salt);
   const newUser = await User.create({
     username: username,
-    password: password,
+    password: hashed,
     email: email
   });
 
@@ -25,7 +26,8 @@ async function userRegister(username, password, email) {
 async function userLogin(username, password) {
   const user = await getUser(username);
   if(!user) throw Error('User doesnot exist');
-  if(user.password != password) throw Error('Incorrect Password');
+  const isMatch=await bcrypt.compare(password,user.password);
+  if(!isMatch) throw Error('Incorrect Password');
   return user;
 }
 
