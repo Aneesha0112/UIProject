@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
+import { fetchData } from "../../main.js";
+import { useNavigate } from 'react-router-dom';
+import {UserContext} from "./UserContext.js";
+import {useContext}  from "react";
+
 
 const Loginform = () => {
+  const navigate = useNavigate();
+  const { updateUser} = useContext(UserContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -15,8 +22,21 @@ const Loginform = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log('User Credentials:', { username, password });
-  };
+  
 
+  fetchData("/user/login",{username,password}, "POST")
+    .then((data)=> {
+      if(!data.message) {
+        updateUser("authenticated", true)
+        navigate("/Profile")
+      }
+    })  
+    .catch((error) => 
+    {
+      console.log(error)
+    })
+  };
+  
   return (
     <div>
       <h1 className="text-center display-1">Login</h1>

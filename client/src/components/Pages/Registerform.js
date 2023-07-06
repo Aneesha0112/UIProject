@@ -1,25 +1,44 @@
 import React, { useState } from 'react';
+import { fetchData } from "../../main.js";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "./UserContext.js";
+import { useContext } from "react";
 
 const Registerform = () => {
+  const navigate = useNavigate();
+  const { updateUser } = useContext(UserContext);
+
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const usernameChange = (event) => {
+  const handleUsernameChange = (event) => {
     setUsername(event.target.value);
   };
 
-  const emailChange = (event) => {
+  const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
 
-  const passwordChange = (event) => {
+  const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     event.preventDefault();
-    console.log('User Details:', { username, email, password });
+    
+    try {
+      const inputData={username,password,email};
+
+      const response = await fetchData('/user/register', inputData, 'POST');
+
+      if (!response.message) {
+        updateUser('authenticated', true);
+        navigate('/Profile'); 
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -35,7 +54,7 @@ const Registerform = () => {
               className="form-control"
               id="username"
               value={username}
-              onChange={usernameChange}
+              onChange={handleUsernameChange}
               required
             />
           </div>
@@ -46,7 +65,7 @@ const Registerform = () => {
               className="form-control"
               id="email"
               value={email}
-              onChange={emailChange}
+              onChange={handleEmailChange}
               required
             />
           </div>
@@ -57,11 +76,11 @@ const Registerform = () => {
               className="form-control"
               id="password"
               value={password}
-              onChange={passwordChange}
+              onChange={handlePasswordChange}
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary"> Register </button>
+          <button type="submit" className="btn btn-primary">Sign Up</button>
         </form>
       </div>
     </div>
